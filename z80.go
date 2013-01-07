@@ -39,7 +39,10 @@ const FLAG_5 = 0x20
 const FLAG_Z = 0x40
 const FLAG_S = 0x80
 
-var OpcodesMap [1536]func(z80 *Z80)
+var (
+	OpcodesMap [1536]func(z80 *Z80)
+	OpcodesDisMap [1536]func(memory MemoryReader, address uint16, shift int) (string, uint16, int)
+)
 
 const SHIFT_0xCB = 256
 const SHIFT_0xED = 512
@@ -609,6 +612,7 @@ func opcode_fd(z80 *Z80) {
 
 func init() {
 	initOpcodes()
+	initOpcodesDis()
 	OpcodesMap[0xcb] = opcode_cb
 	OpcodesMap[0xdd] = opcode_dd
 	OpcodesMap[0xed] = opcode_ed

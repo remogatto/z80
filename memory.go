@@ -18,3 +18,7 @@ type MemoryAccessor interface {
 	Write(address uint16, value byte, protectROM bool)
 	Data() *[0x10000]byte
 }
+
+type MemoryReader interface {
+	ReadByte(address uint16) byte
+}

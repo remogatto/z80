@@ -23,11 +23,16 @@
 require 'rake/clean'
 require 'erb'
 
-CLOBBER.concat(['z80_gen.go', 'opcodes_gen.go'])
+CLOBBER.concat(['z80_gen.go', 'opcodes_gen.go', 'opcodes_dis_gen.go'])
 
 file "z80" => ["z80.go"] do
   puts "Compile z80.go"
   `go build z80.go`
+end
+
+file "z80_dis" => ["z80_dis.go"] do
+     puts "Compile z80_dis.go"
+     `go build z80_dis.go`
 end
 
 file "opcodes_gen.go" => ["z80", "opcodes_gen.go.template"] do
@@ -36,6 +41,14 @@ file "opcodes_gen.go" => ["z80", "opcodes_gen.go.template"] do
 
   puts "gofmt opcodes_gen.go"
   `gofmt -w opcodes_gen.go`
+end
+
+file "opcodes_dis_gen.go" => ["z80_dis", "opcodes_dis_gen.go.template"] do
+  puts "Write opcodes_dis_gen.go"
+  `go run z80_dis.go`
+
+  puts "gofmt opcodes_dis_gen.go"
+  `gofmt -w opcodes_dis_gen.go`
 end
 
 file "z80_gen.go" => ["z80_gen.go.erb"] do
@@ -48,12 +61,22 @@ file "z80_gen.go" => ["z80_gen.go.erb"] do
   `gofmt -w z80_gen.go`
 end
 
-task :copy_all => ['z80_gen.go', 'opcodes_gen.go'] do
-  cp "z80_gen.go", "../"
-  cp "opcodes_gen.go", "../"
+file "z80_dis_gen.go" => ["z80_dis_gen.go.erb"] do
+  template = ERB.new(File.read('z80_dis_gen.go.erb'))
+
+  puts "Write z80_dis_gen.go"
+  File.open("z80_dis_gen.go", 'w') { |f| f << template.result(binding) }
+
+  puts "gofmt z80_dis_gen.go"
+  `gofmt -w z80_dis_gen.go`
+end
+
+task :copy_all => ['z80_gen.go', 'opcodes_gen.go', 'opcodes_dis_gen.go', 'z80_dis_gen.go'] do
+  cp "z80_dis_gen.go", "../"
+  cp "opcodes_dis_gen.go", "../"
   Dir.chdir("../") do
     sh "go test"
   end
 end
 
-task :default => ['z80_gen.go', 'opcodes_gen.go']
+task :default => ['z80_gen.go', 'opcodes_gen.go', 'z80_dis_gen.go', 'opcodes_dis_gen.go']
