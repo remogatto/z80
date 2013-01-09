@@ -31,33 +31,10 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"reflect"
 	"regexp"
 	"strings"
 	"text/template"
 )
-
-// The status of which flags relates to which condition
-
-// These conditions involve !( F & FLAG_<whatever> )
-var not = map[string]bool{
-	"NC": true,
-	"NZ": true,
-	"P":  true,
-	"PO": true,
-}
-
-// Use F & FLAG_<whatever>
-var flag = map[string]string{
-	"C":  "C",
-	"NC": "C",
-	"PE": "P",
-	"PO": "P",
-	"M":  "S",
-	"P":  "S",
-	"Z":  "Z",
-	"NZ": "Z",
-}
 
 // Returns whether 's' matches 'pattern'
 func matches(s, pattern string) bool {
@@ -105,9 +82,6 @@ func readByte(varString string) {
 
 func result(args ...string) {
 	out := ""
-	if len(args) > 0 {
-		out = ""
-	}
 	for i, s := range args {
 		switch s {
 		case "nnnn":
@@ -137,226 +111,10 @@ func result(args ...string) {
 			out += "+" + "\",\"" + "+"
 		}
 	}
-	ln(fmt.Sprintf("result += %s", out))
-}
-
-// Generalised opcode routines
-
-func arithmetic_logical(opcode, arg1, arg2 string) {
-	result(arg1, arg2)
-}
-
-func call_jp(opcode, condition, offset string) {
-	result(condition, offset)
-}
-
-func cpi_cpd(opcode string) {
-	modifier := _if(opcode == "CPI", "CPI", "CPD")
-	result(modifier)
-}
-
-func cpir_cpdr(opcode string) {}
-
-func inc_dec(opcode, arg string) {
-	result(arg)
-}
-
-func ini_ind(opcode string) {}
-
-func inir_indr(opcode string) {}
-
-func ldi_ldd(opcode string) {}
-
-func ldir_lddr(opcode string) {}
-
-func otir_otdr(opcode string) {}
-
-func outi_outd(opcode string) {}
-
-func push_pop(opcode, regpair string) {
-	result(regpair)
-}
-
-func res_set_hexmask(opcode string, bit uint) string {
-	mask := 1 << bit
-	if opcode == "RES" {
-		mask = 0xff - mask
+	if len(args) > 0 {
+		ln(fmt.Sprintf("result += %s", out))
 	}
-	return fmt.Sprintf("0x%02x", mask)
 }
-
-func res_set(opcode string, bit uint, register string) {
-	hex_mask := res_set_hexmask(opcode, bit)
-	result(hex_mask)
-}
-
-func rotate_shift(opcode, register string) {
-	result(register)
-}
-
-// A type on which we define methods corresponding to opcodes.
-// The methods are found at run-time by using Go's reflection capabilities.
-type Opcode byte
-
-// Individual opcode routines
-
-func (Opcode) ADC(a, b string) { arithmetic_logical("ADC", a, b) }
-
-func (Opcode) ADD(a, b string) { arithmetic_logical("ADD", a, b) }
-
-func (Opcode) AND(a, b string) { arithmetic_logical("AND", a, b) }
-
-func (Opcode) BIT(bit, register string) {
-	result(bit, register)
-}
-
-func (Opcode) CALL(a, b string) { call_jp("CALL", a, b) }
-
-func (Opcode) CCF() {}
-
-func (Opcode) CP(a, b string) { arithmetic_logical("CP", a, b) }
-
-func (Opcode) CPD() { cpi_cpd("CPD") }
-
-func (Opcode) CPDR() { cpir_cpdr("CPDR") }
-
-func (Opcode) CPI() { cpi_cpd("CPI") }
-
-func (Opcode) CPIR() { cpir_cpdr("CPIR") }
-
-func (Opcode) CPL() {}
-
-func (Opcode) DAA() {}
-
-func (Opcode) DEC(a string) { inc_dec("DEC", a) }
-
-func (Opcode) DI() {}
-
-func (Opcode) DJNZ() {}
-
-func (Opcode) EI() {}
-
-func (Opcode) EX(arg1, arg2 string) {
-	result(arg1, arg1)
-}
-
-func (Opcode) EXX() {}
-
-func (Opcode) HALT() {}
-
-func (Opcode) IM(mode string) {}
-
-func (Opcode) IN(register, port string) {
-	result(register, port)
-}
-
-func (Opcode) INC(a string) { inc_dec("INC", a) }
-
-func (Opcode) IND() { ini_ind("IND") }
-
-func (Opcode) INDR() { inir_indr("INDR") }
-
-func (Opcode) INI() { ini_ind("INI") }
-
-func (Opcode) INIR() { inir_indr("INIR") }
-
-func (Opcode) JP(condition, offset string) {
-	call_jp("JP", condition, offset)
-}
-
-func (Opcode) JR(condition, offset string) {
-	result(condition, offset)
-}
-
-func (Opcode) LD(dest, src string) {
-	result(dest, src)
-}
-
-func (Opcode) LDD() { ldi_ldd("LDD") }
-
-func (Opcode) LDDR() { ldir_lddr("LDDR") }
-
-func (Opcode) LDI() { ldi_ldd("LDI") }
-
-func (Opcode) LDIR() { ldir_lddr("LDIR") }
-
-func (Opcode) NEG() {}
-
-func (Opcode) NOP() {}
-
-func (Opcode) OR(a, b string) { arithmetic_logical("OR", a, b) }
-
-func (Opcode) OTDR() { otir_otdr("OTDR") }
-
-func (Opcode) OTIR() { otir_otdr("OTIR") }
-
-func (Opcode) OUT(port, register string) {
-	result(port, register)
-}
-
-func (Opcode) OUTD() { outi_outd("OUTD") }
-
-func (Opcode) OUTI() { outi_outd("OUTI") }
-
-func (Opcode) POP(a string) { push_pop("POP", a) }
-
-func (Opcode) PUSH(regpair string) {
-	push_pop("PUSH", regpair)
-}
-
-func (Opcode) RES(bit, register string) {
-	result(bit, register)
-}
-
-func (Opcode) RET(condition string) {}
-
-func (Opcode) RETN() {}
-
-func (Opcode) RL(a string) { rotate_shift("RL", a) }
-
-func (Opcode) RLC(a string) { rotate_shift("RLC", a) }
-
-func (Opcode) RLCA() {}
-
-func (Opcode) RLA() {}
-
-func (Opcode) RLD() {}
-
-func (Opcode) RR(a string) { rotate_shift("RR", a) }
-
-func (Opcode) RRA(a string) {
-	result(a)
-}
-
-func (Opcode) RRC(a string) { rotate_shift("RRC", a) }
-
-func (Opcode) RRCA() {}
-
-func (Opcode) RRD() {}
-
-func (Opcode) RST(value string) {}
-
-func (Opcode) SBC(a, b string) { arithmetic_logical("SBC", a, b) }
-
-func (Opcode) SCF() {}
-
-func (Opcode) SET(bit, register string) {
-	result(bit, register)
-}
-
-func (Opcode) SLA(a string) { rotate_shift("SLA", a) }
-
-func (Opcode) SLL(a string) { rotate_shift("SLL", a) }
-
-func (Opcode) SRA(a string) { rotate_shift("SRA", a) }
-
-func (Opcode) SRL(a string) { rotate_shift("SRL", a) }
-
-func (Opcode) SUB(a, b string) { arithmetic_logical("SUB", a, b) }
-
-func (Opcode) XOR(a, b string) { arithmetic_logical("XOR", a, b) }
-
-func (Opcode) SLTTRAP() {}
 
 // Description of each file
 var description = map[string]string{
@@ -365,21 +123,6 @@ var description = map[string]string{
 	"opcodes_ddfdcb.dat": "z80_ddfdcb.c Z80 {DD,FD}CBxx opcodes",
 	"opcodes_ed.dat":     "z80_ed.c: Z80 CBxx opcodes",
 	"opcodes_base.dat":   "opcodes_base.c: unshifted Z80 opcodes",
-}
-
-var funcTable = make(map[string]reflect.Value)
-
-func init() {
-	var opcode Opcode
-	var opcodeType reflect.Type = reflect.TypeOf(opcode)
-	var opcodeValue reflect.Value = reflect.ValueOf(opcode)
-
-	numMethods := opcodeType.NumMethod()
-	for i := 0; i < numMethods; i++ {
-		funcName := opcodeType.Method(i).Name
-		funcValue := opcodeValue.Method(i)
-		funcTable[funcName] = funcValue
-	}
 }
 
 // Removes characters which cannot form a Go identifier
@@ -508,53 +251,8 @@ func processDataFile(data_file, logical_data_file string, code *bytes.Buffer, fu
 			} else {
 				ln("shift = 0")
 			}
-			// Handle the undocumented rotate-shift-or-bit and store-in-register opcodes specially
-			if extra != "" {
-				// register, opcode2 := args[0], args[1]
-				// lc_opcode2 := lc(opcode2)
 
-				// if (opcode2 == "RES") || (opcode2 == "SET") {
-				// 	bit := strings.Split(extra, ",")[0]
-				// 	bitNum, err2 := strconv.ParseUint(bit, 10, 0)
-				// 	if err2 != nil {
-				// 		panic("invalid bit number: " + bit)
-				// 	}
-
-				// 	operator := _if(opcode2 == "RES", "&", "|")
-				// 	hexmask := res_set_hexmask(opcode2, uint(bitNum))
-
-				// 	ln("  z80.", register, " = z80.memory.ReadByte(z80.tempaddr) ", operator, " ", hexmask)
-				// 	ln("  z80.memory.ContendReadNoMreq(z80.tempaddr, 1)")
-				// 	ln("  z80.memory.WriteByte(z80.tempaddr, z80.", register, ")")
-				// 	ln("return result, address")
-				// 	ln("}")
-				// } else {
-				// 	ln("  z80.", register, " = z80.memory.ReadByte(z80.tempaddr)")
-				// 	ln("  z80.memory.ContendReadNoMreq( z80.tempaddr, 1 )")
-				// 	ln("  z80.", register, " = z80.", lc_opcode2, "(z80.", register, ")")
-				// 	ln("  z80.memory.WriteByte(z80.tempaddr, z80.", register, ")")
-				// 	ln("}")
-				// }
-
-				// outputStream = code
-				// continue
-			}
-
-			if fn := funcTable[strings.ToUpper(opcode)]; fn.IsValid() {
-				reflect_args := make([]reflect.Value, len(args))
-				for i, arg := range args {
-					reflect_args[i] = reflect.ValueOf(arg)
-				}
-
-				// Missing arguments are substituted with ""
-				fn_numArgs := fn.Type().NumIn()
-				for len(reflect_args) < fn_numArgs {
-					reflect_args = append(reflect_args, reflect.ValueOf(""))
-				}
-
-				// Call the method. Excessive arguments are simply ignored.
-				fn.Call(reflect_args[0:fn_numArgs])
-			}
+			result(args...)
 
 			ln("return result, address + 1, shift")
 			ln("}")

@@ -2108,7 +2108,7 @@ func dis_instr__RLCA(memory MemoryReader, address uint16, shift int) (string, ui
 func dis_instr__EX_AF_AF(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "EX "
 	shift = 0
-	result += "AF" + "," + "AF"
+	result += "AF" + "," + "AF'"
 	return result, address + 1, shift
 }
 
@@ -2173,6 +2173,9 @@ func dis_instr__RRCA(memory MemoryReader, address uint16, shift int) (string, ui
 func dis_instr__DJNZ_OFFSET(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "DJNZ "
 	shift = 0
+	address++
+	offset := memory.ReadByte(address)
+	result += fmt.Sprintf("0x%x", offset)
 	return result, address + 1, shift
 }
 
@@ -2244,7 +2247,7 @@ func dis_instr__JR_OFFSET(memory MemoryReader, address uint16, shift int) (strin
 	shift = 0
 	address++
 	offset := memory.ReadByte(address)
-	result += fmt.Sprintf("0x%x", offset) + "," + ""
+	result += fmt.Sprintf("0x%x", offset)
 	return result, address + 1, shift
 }
 
@@ -2302,7 +2305,6 @@ func dis_instr__LD_E_NN(memory MemoryReader, address uint16, shift int) (string,
 func dis_instr__RRA(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RRA "
 	shift = 0
-	result += ""
 	return result, address + 1, shift
 }
 
@@ -3567,7 +3569,7 @@ func dis_instr__OR_A_A(memory MemoryReader, address uint16, shift int) (string, 
 func dis_instr__CP_B(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "CP "
 	shift = 0
-	result += "B" + "," + ""
+	result += "B"
 	return result, address + 1, shift
 }
 
@@ -3575,7 +3577,7 @@ func dis_instr__CP_B(memory MemoryReader, address uint16, shift int) (string, ui
 func dis_instr__CP_C(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "CP "
 	shift = 0
-	result += "C" + "," + ""
+	result += "C"
 	return result, address + 1, shift
 }
 
@@ -3583,7 +3585,7 @@ func dis_instr__CP_C(memory MemoryReader, address uint16, shift int) (string, ui
 func dis_instr__CP_D(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "CP "
 	shift = 0
-	result += "D" + "," + ""
+	result += "D"
 	return result, address + 1, shift
 }
 
@@ -3591,7 +3593,7 @@ func dis_instr__CP_D(memory MemoryReader, address uint16, shift int) (string, ui
 func dis_instr__CP_E(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "CP "
 	shift = 0
-	result += "E" + "," + ""
+	result += "E"
 	return result, address + 1, shift
 }
 
@@ -3599,7 +3601,7 @@ func dis_instr__CP_E(memory MemoryReader, address uint16, shift int) (string, ui
 func dis_instr__CP_H(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "CP "
 	shift = 0
-	result += "H" + "," + ""
+	result += "H"
 	return result, address + 1, shift
 }
 
@@ -3607,7 +3609,7 @@ func dis_instr__CP_H(memory MemoryReader, address uint16, shift int) (string, ui
 func dis_instr__CP_L(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "CP "
 	shift = 0
-	result += "L" + "," + ""
+	result += "L"
 	return result, address + 1, shift
 }
 
@@ -3615,7 +3617,7 @@ func dis_instr__CP_L(memory MemoryReader, address uint16, shift int) (string, ui
 func dis_instr__CP_iHL(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "CP "
 	shift = 0
-	result += "(HL)" + "," + ""
+	result += "(HL)"
 	return result, address + 1, shift
 }
 
@@ -3623,7 +3625,7 @@ func dis_instr__CP_iHL(memory MemoryReader, address uint16, shift int) (string, 
 func dis_instr__CP_A(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "CP "
 	shift = 0
-	result += "A" + "," + ""
+	result += "A"
 	return result, address + 1, shift
 }
 
@@ -3631,6 +3633,7 @@ func dis_instr__CP_A(memory MemoryReader, address uint16, shift int) (string, ui
 func dis_instr__RET_NZ(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RET "
 	shift = 0
+	result += "NZ"
 	return result, address + 1, shift
 }
 
@@ -3664,7 +3667,7 @@ func dis_instr__JP_NNNN(memory MemoryReader, address uint16, shift int) (string,
 	address++
 	b2 := memory.ReadByte(address)
 	nnnn := joinBytes(b2, b1)
-	result += fmt.Sprintf("0x%04x", nnnn) + "," + ""
+	result += fmt.Sprintf("0x%04x", nnnn)
 	return result, address + 1, shift
 }
 
@@ -3703,6 +3706,7 @@ func dis_instr__ADD_A_NN(memory MemoryReader, address uint16, shift int) (string
 func dis_instr__RST_00(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RST "
 	shift = 0
+	result += "00"
 	return result, address + 1, shift
 }
 
@@ -3710,6 +3714,7 @@ func dis_instr__RST_00(memory MemoryReader, address uint16, shift int) (string, 
 func dis_instr__RET_Z(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RET "
 	shift = 0
+	result += "Z"
 	return result, address + 1, shift
 }
 
@@ -3737,6 +3742,7 @@ func dis_instr__JP_Z_NNNN(memory MemoryReader, address uint16, shift int) (strin
 func dis_instr__SHIFT_CB(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "shift "
 	shift = SHIFT_0xCB
+	result += "CB"
 	return result, address + 1, shift
 }
 
@@ -3762,7 +3768,7 @@ func dis_instr__CALL_NNNN(memory MemoryReader, address uint16, shift int) (strin
 	address++
 	b2 := memory.ReadByte(address)
 	nnnn := joinBytes(b2, b1)
-	result += fmt.Sprintf("0x%04x", nnnn) + "," + ""
+	result += fmt.Sprintf("0x%04x", nnnn)
 	return result, address + 1, shift
 }
 
@@ -3780,6 +3786,7 @@ func dis_instr__ADC_A_NN(memory MemoryReader, address uint16, shift int) (string
 func dis_instr__RST_8(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RST "
 	shift = 0
+	result += "8"
 	return result, address + 1, shift
 }
 
@@ -3787,6 +3794,7 @@ func dis_instr__RST_8(memory MemoryReader, address uint16, shift int) (string, u
 func dis_instr__RET_NC(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RET "
 	shift = 0
+	result += "NC"
 	return result, address + 1, shift
 }
 
@@ -3846,7 +3854,7 @@ func dis_instr__SUB_NN(memory MemoryReader, address uint16, shift int) (string, 
 	shift = 0
 	address++
 	nn := memory.ReadByte(address)
-	result += fmt.Sprintf("(0x%02x)", nn) + "," + ""
+	result += fmt.Sprintf("(0x%02x)", nn)
 	return result, address + 1, shift
 }
 
@@ -3854,6 +3862,7 @@ func dis_instr__SUB_NN(memory MemoryReader, address uint16, shift int) (string, 
 func dis_instr__RST_10(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RST "
 	shift = 0
+	result += "10"
 	return result, address + 1, shift
 }
 
@@ -3861,6 +3870,7 @@ func dis_instr__RST_10(memory MemoryReader, address uint16, shift int) (string, 
 func dis_instr__RET_C(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RET "
 	shift = 0
+	result += "C"
 	return result, address + 1, shift
 }
 
@@ -3909,6 +3919,7 @@ func dis_instr__CALL_C_NNNN(memory MemoryReader, address uint16, shift int) (str
 func dis_instr__SHIFT_DD(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "shift "
 	shift = SHIFT_0xDD
+	result += "DD"
 	return result, address + 1, shift
 }
 
@@ -3926,6 +3937,7 @@ func dis_instr__SBC_A_NN(memory MemoryReader, address uint16, shift int) (string
 func dis_instr__RST_18(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RST "
 	shift = 0
+	result += "18"
 	return result, address + 1, shift
 }
 
@@ -3933,6 +3945,7 @@ func dis_instr__RST_18(memory MemoryReader, address uint16, shift int) (string, 
 func dis_instr__RET_PO(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RET "
 	shift = 0
+	result += "PO"
 	return result, address + 1, shift
 }
 
@@ -3961,7 +3974,7 @@ func dis_instr__JP_PO_NNNN(memory MemoryReader, address uint16, shift int) (stri
 func dis_instr__EX_iSP_HL(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "EX "
 	shift = 0
-	result += "(SP)" + "," + "(SP)"
+	result += "(SP)" + "," + "HL"
 	return result, address + 1, shift
 }
 
@@ -3992,7 +4005,7 @@ func dis_instr__AND_NN(memory MemoryReader, address uint16, shift int) (string, 
 	shift = 0
 	address++
 	nn := memory.ReadByte(address)
-	result += fmt.Sprintf("(0x%02x)", nn) + "," + ""
+	result += fmt.Sprintf("(0x%02x)", nn)
 	return result, address + 1, shift
 }
 
@@ -4000,6 +4013,7 @@ func dis_instr__AND_NN(memory MemoryReader, address uint16, shift int) (string, 
 func dis_instr__RST_20(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RST "
 	shift = 0
+	result += "20"
 	return result, address + 1, shift
 }
 
@@ -4007,6 +4021,7 @@ func dis_instr__RST_20(memory MemoryReader, address uint16, shift int) (string, 
 func dis_instr__RET_PE(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RET "
 	shift = 0
+	result += "PE"
 	return result, address + 1, shift
 }
 
@@ -4014,7 +4029,7 @@ func dis_instr__RET_PE(memory MemoryReader, address uint16, shift int) (string, 
 func dis_instr__JP_HL(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "JP "
 	shift = 0
-	result += "HL" + "," + ""
+	result += "HL"
 	return result, address + 1, shift
 }
 
@@ -4035,7 +4050,7 @@ func dis_instr__JP_PE_NNNN(memory MemoryReader, address uint16, shift int) (stri
 func dis_instr__EX_DE_HL(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "EX "
 	shift = 0
-	result += "DE" + "," + "DE"
+	result += "DE" + "," + "HL"
 	return result, address + 1, shift
 }
 
@@ -4056,6 +4071,7 @@ func dis_instr__CALL_PE_NNNN(memory MemoryReader, address uint16, shift int) (st
 func dis_instr__SHIFT_ED(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "shift "
 	shift = SHIFT_0xED
+	result += "ED"
 	return result, address + 1, shift
 }
 
@@ -4073,6 +4089,7 @@ func dis_instr__XOR_A_NN(memory MemoryReader, address uint16, shift int) (string
 func dis_instr__RST_28(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RST "
 	shift = 0
+	result += "28"
 	return result, address + 1, shift
 }
 
@@ -4080,6 +4097,7 @@ func dis_instr__RST_28(memory MemoryReader, address uint16, shift int) (string, 
 func dis_instr__RET_P(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RET "
 	shift = 0
+	result += "P"
 	return result, address + 1, shift
 }
 
@@ -4138,7 +4156,7 @@ func dis_instr__OR_NN(memory MemoryReader, address uint16, shift int) (string, u
 	shift = 0
 	address++
 	nn := memory.ReadByte(address)
-	result += fmt.Sprintf("(0x%02x)", nn) + "," + ""
+	result += fmt.Sprintf("(0x%02x)", nn)
 	return result, address + 1, shift
 }
 
@@ -4146,6 +4164,7 @@ func dis_instr__OR_NN(memory MemoryReader, address uint16, shift int) (string, u
 func dis_instr__RST_30(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RST "
 	shift = 0
+	result += "30"
 	return result, address + 1, shift
 }
 
@@ -4153,6 +4172,7 @@ func dis_instr__RST_30(memory MemoryReader, address uint16, shift int) (string, 
 func dis_instr__RET_M(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RET "
 	shift = 0
+	result += "M"
 	return result, address + 1, shift
 }
 
@@ -4201,6 +4221,7 @@ func dis_instr__CALL_M_NNNN(memory MemoryReader, address uint16, shift int) (str
 func dis_instr__SHIFT_FD(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "shift "
 	shift = SHIFT_0xFD
+	result += "FD"
 	return result, address + 1, shift
 }
 
@@ -4210,7 +4231,7 @@ func dis_instr__CP_NN(memory MemoryReader, address uint16, shift int) (string, u
 	shift = 0
 	address++
 	nn := memory.ReadByte(address)
-	result += fmt.Sprintf("(0x%02x)", nn) + "," + ""
+	result += fmt.Sprintf("(0x%02x)", nn)
 	return result, address + 1, shift
 }
 
@@ -4218,6 +4239,7 @@ func dis_instr__CP_NN(memory MemoryReader, address uint16, shift int) (string, u
 func dis_instr__RST_38(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "RST "
 	shift = 0
+	result += "38"
 	return result, address + 1, shift
 }
 
@@ -6324,6 +6346,7 @@ func dis_instrED__RETN(memory MemoryReader, address uint16, shift int) (string, 
 func dis_instrED__IM_0(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "IM "
 	shift = 0
+	result += "0"
 	return result, address + 1, shift
 }
 
@@ -6421,6 +6444,7 @@ func dis_instrED__LD_iNNNN_DE(memory MemoryReader, address uint16, shift int) (s
 func dis_instrED__IM_1(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "IM "
 	shift = 0
+	result += "1"
 	return result, address + 1, shift
 }
 
@@ -6473,6 +6497,7 @@ func dis_instrED__LD_DE_iNNNN(memory MemoryReader, address uint16, shift int) (s
 func dis_instrED__IM_2(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "IM "
 	shift = 0
+	result += "2"
 	return result, address + 1, shift
 }
 
@@ -6657,7 +6682,6 @@ func dis_instrED__LDI(memory MemoryReader, address uint16, shift int) (string, u
 func dis_instrED__CPI(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "CPI "
 	shift = 0
-	result += "CPI"
 	return result, address + 1, shift
 }
 
@@ -6686,7 +6710,6 @@ func dis_instrED__LDD(memory MemoryReader, address uint16, shift int) (string, u
 func dis_instrED__CPD(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "CPD "
 	shift = 0
-	result += "CPD"
 	return result, address + 1, shift
 }
 
@@ -7482,6 +7505,7 @@ func dis_instrDD__CP_A_iREGpDD(memory MemoryReader, address uint16, shift int) (
 func dis_instrDD__SHIFT_DDFDCB(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "shift "
 	shift = SHIFT_0xCB
+	result += "DDFDCB"
 	return result, address + 1, shift
 }
 
@@ -7497,7 +7521,7 @@ func dis_instrDD__POP_REG(memory MemoryReader, address uint16, shift int) (strin
 func dis_instrDD__EX_iSP_REG(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "EX "
 	shift = 0
-	result += "(SP)" + "," + "(SP)"
+	result += "(SP)" + "," + "ix"
 	return result, address + 1, shift
 }
 
@@ -7513,7 +7537,7 @@ func dis_instrDD__PUSH_REG(memory MemoryReader, address uint16, shift int) (stri
 func dis_instrDD__JP_REG(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "JP "
 	shift = 0
-	result += "ix" + "," + ""
+	result += "ix"
 	return result, address + 1, shift
 }
 
@@ -8240,6 +8264,7 @@ func dis_instrFD__CP_A_iREGpDD(memory MemoryReader, address uint16, shift int) (
 func dis_instrFD__SHIFT_DDFDCB(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "shift "
 	shift = SHIFT_0xCB
+	result += "DDFDCB"
 	return result, address + 1, shift
 }
 
@@ -8255,7 +8280,7 @@ func dis_instrFD__POP_REG(memory MemoryReader, address uint16, shift int) (strin
 func dis_instrFD__EX_iSP_REG(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "EX "
 	shift = 0
-	result += "(SP)" + "," + "(SP)"
+	result += "(SP)" + "," + "iy"
 	return result, address + 1, shift
 }
 
@@ -8271,7 +8296,7 @@ func dis_instrFD__PUSH_REG(memory MemoryReader, address uint16, shift int) (stri
 func dis_instrFD__JP_REG(memory MemoryReader, address uint16, shift int) (string, uint16, int) {
 	result := "JP "
 	shift = 0
-	result += "iy" + "," + ""
+	result += "iy"
 	return result, address + 1, shift
 }
 
