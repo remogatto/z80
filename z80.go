@@ -188,6 +188,31 @@ func (z80 *Z80) Interrupt() {
 	}
 }
 
+// Process a Z80 non-maskable interrupt.
+func (z80 *Z80) NonMaskableInterrupt() {
+	if z80.Halted {
+		z80.pc++
+		z80.Halted = false
+	}
+
+	z80.Tstates += 7
+
+	z80.R = (z80.R + 1) & 0x7f
+	z80.IFF1, z80.IFF2 = 0, 0
+
+	// push PC
+	{
+		pch, pcl := splitWord(z80.pc)
+
+		z80.sp--
+		z80.memory.WriteByte(z80.sp, pch)
+		z80.sp--
+		z80.memory.WriteByte(z80.sp, pcl)
+	}
+
+	z80.pc = 0x0066
+}
+
 func ternOpB(cond bool, ret1, ret2 byte) byte {
 	if cond {
 		return ret1
@@ -509,16 +534,20 @@ func (z80 *Z80) sltTrap(address int16, level byte) int {
 	return 0
 }
 
+// Execute a single instruction at the program counter.
+func (z80 *Z80) DoOpcode() {
+	z80.memory.ContendRead(z80.pc, 4)
+	opcode := z80.memory.ReadByteInternal(z80.pc)
+	z80.R = (z80.R + 1) & 0x7f
+	z80.pc++
+	OpcodesMap[opcode](z80)
+}
+
 func (z80 *Z80) doOpcodes() {
 	// Main instruction emulation loop
 	{
 		for (z80.Tstates < z80.EventNextEvent) && !z80.Halted {
-			z80.memory.ContendRead(z80.pc, 4)
-			opcode := z80.memory.ReadByteInternal(z80.pc)
-			z80.R = (z80.R + 1) & 0x7f
-			z80.pc++
-			OpcodesMap[opcode](z80)
-
+			z80.DoOpcode()
 		}
 
 		if z80.Halted {
