@@ -12,7 +12,7 @@ type MemoryAccessor interface {
 	ReadByte(address uint16) byte
 
 	// ReadByteInternal reads a byte from address without taking
-	// into account contetion.
+	// into account contention.
 	ReadByteInternal(address uint16) byte
 
 	// WriteByte writes a byte at address taking into account
