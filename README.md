@@ -18,14 +18,14 @@ hacked to generate Go code rather than C code.
 The z80 package is at the core of a couple of emulator written in
 Go. Namely:
 
-* GoSpeccy - A Spectrum ZX 48k Emulator
-* SMS - A Sega Master System Emulator
-* TRS80 - A TRS-80 Model III Emulator
+* [GoSpeccy](https://github.com/remogatto/gospeccy) - A Spectrum ZX 48k Emulator
+* [SMS](https://github.com/remogatto/sms) - A Sega Master System Emulator
+* [TRS80](https://github.com/lkesteloot/trs80) - A TRS-80 Model III Emulator
  
 # Contributors
 
-* Atom [@0xe2-0x9a-0x9b](https://github.com/0xe2-0x9a-0x9b)
-* Lawrence Kesteloot [lkesteloot](https://github.com/lkesteloot)
+* [Atom](https://github.com/0xe2-0x9a-0x9b)
+* [Lawrence Kesteloot](https://github.com/lkesteloot)
 
 # License
 
