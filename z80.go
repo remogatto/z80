@@ -543,23 +543,6 @@ func (z80 *Z80) DoOpcode() {
 	OpcodesMap[opcode](z80)
 }
 
-func (z80 *Z80) doOpcodes() {
-	// Main instruction emulation loop
-	{
-		for (z80.Tstates < z80.EventNextEvent) && !z80.Halted {
-			z80.DoOpcode()
-		}
-
-		if z80.Halted {
-			// Repeat emulating the HALT instruction until 'z80.eventNextEvent'
-			for z80.Tstates < z80.EventNextEvent {
-				z80.memory.ContendRead(z80.pc, 4)
-				z80.R = (z80.R + 1) & 0x7f
-			}
-		}
-	}
-}
-
 func invalidOpcode(z80 *Z80) {
 	panic("invalid opcode")
 }
