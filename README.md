@@ -9,9 +9,9 @@ hacked to generate Go code rather than C code.
 # Features
 
 * Machine independent (i.e. the same package could be used to emulate
-  several Z80-based machine)
+  several Z80-based machines).
 * Tested against the excellent test-suite shipped with FUSE.
-* It includes a disassembler
+* It includes a couple of disassembling/debugging methods.
 
 # Emulators
 
