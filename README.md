@@ -9,23 +9,23 @@ hacked to generate Go code rather than C code.
 # Features
 
 * Machine independent (i.e. the same package could be used to emulate
-  several Z80-based machine)
+  several Z80-based machines).
 * Tested against the excellent test-suite shipped with FUSE.
-* It includes a disassembler
+* It includes a couple of disassembling/debugging functions.
 
 # Emulators
 
 The z80 package is at the core of a couple of emulator written in
 Go. Namely:
 
-* GoSpeccy - A Spectrum ZX 48k Emulator
-* SMS - A Sega Master System Emulator
-* TRS80 - A TRS-80 Model III Emulator
+* [GoSpeccy](https://github.com/remogatto/gospeccy) - A Spectrum ZX 48k Emulator
+* [SMS](https://github.com/remogatto/sms) - A Sega Master System Emulator
+* [TRS80](https://github.com/lkesteloot/trs80) - A TRS-80 Model III Emulator
  
 # Contributors
 
-* Atom [@0xe2-0x9a-0x9b](https://github.com/0xe2-0x9a-0x9b)
-* Lawrence Kesteloot [lkesteloot](https://github.com/lkesteloot)
+* [Atom](https://github.com/0xe2-0x9a-0x9b)
+* [Lawrence Kesteloot](https://github.com/lkesteloot)
 
 # License
 
