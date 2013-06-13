@@ -28,13 +28,13 @@ type MemoryAccessor interface {
 
 	// ContendRead increments the Tstates counter by time as a
 	// result of a memory read at the given address.
-	ContendRead(address uint16, time uint)
+	ContendRead(address uint16, time int)
 
-	ContendReadNoMreq(address uint16, time uint)
-	ContendReadNoMreq_loop(address uint16, time uint, count uint)
+	ContendReadNoMreq(address uint16, time int)
+	ContendReadNoMreq_loop(address uint16, time int, count uint)
 
-	ContendWriteNoMreq(address uint16, time uint)
-	ContendWriteNoMreq_loop(address uint16, time uint, count uint)
+	ContendWriteNoMreq(address uint16, time int)
+	ContendWriteNoMreq_loop(address uint16, time int, count uint)
 
 	Read(address uint16) byte
 	Write(address uint16, value byte, protectROM bool)

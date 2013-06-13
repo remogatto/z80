@@ -92,12 +92,12 @@ type Z80 struct {
 
 	bc, bc_, hl, hl_, af, de, de_, ix, iy register16
 
-	EventNextEvent uint
+	EventNextEvent int
 
 	// Number of tstates since the beginning of the last frame.
 	// The value of this variable is usually smaller than TStatesPerFrame,
 	// but in some unlikely circumstances it may be >= than that.
-	Tstates uint
+	Tstates int
 
 	Halted bool
 
