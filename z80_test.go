@@ -95,7 +95,7 @@ func (memory *testMemory) DumpMemory(out *[]string) {
 	}
 }
 
-func contendMemory(z80 *Z80, address uint16, time uint) {
+func contendMemory(z80 *Z80, address uint16, time int) {
 	tstates_p := &z80.Tstates
 	tstates := *tstates_p
 
@@ -104,7 +104,7 @@ func contendMemory(z80 *Z80, address uint16, time uint) {
 	*tstates_p = tstates
 }
 
-func contendPort(z80 *Z80, time uint) {
+func contendPort(z80 *Z80, time int) {
 	tstates_p := &z80.Tstates
 	*tstates_p += time
 }
@@ -141,27 +141,27 @@ func (memory *testMemory) WriteByte(address uint16, b byte) {
 	memory.WriteByteInternal(address, b)
 }
 
-func (memory *testMemory) ContendRead(address uint16, time uint) {
+func (memory *testMemory) ContendRead(address uint16, time int) {
 	events = append(events, fmt.Sprintf("%5d MC %04x\n", memory.z80.Tstates, address))
 	contendMemory(memory.z80, address, time)
 }
 
-func (memory *testMemory) ContendReadNoMreq(address uint16, time uint) {
+func (memory *testMemory) ContendReadNoMreq(address uint16, time int) {
 	memory.ContendRead(address, time)
 }
 
-func (memory *testMemory) ContendReadNoMreq_loop(address uint16, time uint, count uint) {
+func (memory *testMemory) ContendReadNoMreq_loop(address uint16, time int, count uint) {
 	for i := uint(0); i < count; i++ {
 		memory.ContendReadNoMreq(address, time)
 	}
 }
 
-func (memory *testMemory) ContendWriteNoMreq(address uint16, time uint) {
+func (memory *testMemory) ContendWriteNoMreq(address uint16, time int) {
 	events = append(events, fmt.Sprintf("%5d MC %04x\n", memory.z80.Tstates, address))
 	contendMemory(memory.z80, address, time)
 }
 
-func (memory *testMemory) ContendWriteNoMreq_loop(address uint16, time uint, count uint) {
+func (memory *testMemory) ContendWriteNoMreq_loop(address uint16, time int, count uint) {
 	for i := uint(0); i < count; i++ {
 		memory.ContendWriteNoMreq(address, time)
 	}
@@ -176,8 +176,8 @@ func (memory *testMemory) Write(address uint16, value byte, protectROM bool) {
 	memory.data_map[address] = value
 }
 
-func (memory *testMemory) Data() *[0x10000]byte {
-	return &memory.data_array
+func (memory *testMemory) Data() []byte {
+	return memory.data_array[:]
 }
 
 func (memory *testMemory) reset() {
@@ -251,6 +251,20 @@ func (p *testPort) ContendPortPostio(port uint16) {
 
 const maxLines = 20000
 
+func (z80 *Z80) doOpcodes() {
+	for (z80.Tstates < z80.EventNextEvent) && !z80.Halted {
+		z80.DoOpcode()
+	}
+
+	if z80.Halted {
+		// Repeat emulating the HALT instruction until 'z80.eventNextEvent'
+		for z80.Tstates < z80.EventNextEvent {
+			z80.memory.ContendRead(z80.pc, 4)
+			z80.R = (z80.R + 1) & 0x7f
+		}
+	}
+}
+
 func TestDoOpcodes(t *testing.T) {
 
 	var memory testMemory
@@ -259,9 +273,9 @@ func TestDoOpcodes(t *testing.T) {
 
 	// Instantiate a Z80 processor
 	z80 := NewZ80(&memory, &port)
-//	ula := NewULA()
-//	z80.init(ula, nil /*tapeDrive_orNil*/)
-//	ula.init(z80, &memory, &port)
+	//	ula := NewULA()
+	//	z80.init(ula, nil /*tapeDrive_orNil*/)
+	//	ula.init(z80, &memory, &port)
 
 	memory.z80 = z80
 	port.z80 = z80
@@ -361,7 +375,7 @@ func TestDoOpcodes(t *testing.T) {
 
 			event, _ := strconv.ParseUint(otherRegs[len(otherRegs)-1], 10, 0)
 
-			z80.EventNextEvent = uint(event)
+			z80.EventNextEvent = int(event)
 
 			// Fill memory
 
